@@ -1,6 +1,16 @@
+'use client'
+
+import Button from '@/components/Button'
+import CepInput from '@/components/Inputs/CepInput'
+import PasswordInput from '@/components/Inputs/PasswordInput'
+import TextInput from '@/components/Inputs/TextInput'
 import Image from 'next/image'
+import { useState } from 'react'
 
 export default function Home() {
+  const [originalCep, setOriginalCep] = useState('')
+  const [maskedCep, setMaskedCep] = useState('')
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
