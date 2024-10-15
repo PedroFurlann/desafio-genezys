@@ -9,7 +9,7 @@ type CepInputProps = {
 
 const CepInput: React.FC<CepInputProps> = ({ placeholder = "", value, onChange }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const originalValue = e.target.value;
+    const originalValue = e.target.value.replace(/\D/g, '');
     const maskedValue = maskCep(originalValue);
     onChange(maskedValue, originalValue);
   }
