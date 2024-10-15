@@ -8,8 +8,8 @@ import 'react-toastify/dist/ReactToastify.css';
 const roboto = Roboto({ weight: "400", subsets: ["greek"] });
 
 export const metadata: Metadata = {
-  title: "Solidus",
-  description: "Sua organização financeira em um lugar só.",
+  title: "Genezys",
+  description: "Teste Genezys",
 };
 
 export default function RootLayout({
