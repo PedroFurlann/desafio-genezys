@@ -22,7 +22,7 @@ const Button: React.FC<ButtonProps> = ({ label, onClick, size = 'medium' }) => {
       className={clsx(
         baseClasses,
         sizeClasses[size],
-        'bg-gray-700 hover:bg-gray-600 transition-all focus:ring-offset-black'
+        'bg-black hover:bg-gray-800 transition-all ease-in-out duration-300 focus:ring-offset-black'
       )}
     >
       {label}

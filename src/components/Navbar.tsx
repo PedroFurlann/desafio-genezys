@@ -6,7 +6,11 @@ import { List } from "phosphor-react";
 import Image from "next/image";
 import Logo from '../../public/logo_genezys_sem_fundo.png';
 
-export const Navbar = () => {
+interface Props {
+  routesList: string[]
+}
+
+export const Navbar = ({ routesList }: Props) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -35,7 +39,9 @@ export const Navbar = () => {
   }, []);
 
   return (
-    <div className="w-full h-24 bg-black flex items-center pl-8 gap-6 justify-between">
+    <div className="w-full h-24 bg-black flex items-center pl-8 gap-6 justify-between"
+      style={{ boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4)' }}
+    >
       <Link href="/" className="cursor-pointer">
         <Image alt="Genezys logo" src={Logo} className="w-12 h-12 bg-transparent cursor-pointer" />
       </Link>
@@ -51,24 +57,17 @@ export const Navbar = () => {
         {isMenuOpen && (
           <div
             ref={menuRef}
-            className="absolute right-28 top-38 bg-black w-48 border border-white rounded-md shadow-lg"
+            className="absolute right-4 top-38 bg-black w-48 border border-white rounded-md shadow-lg"
             style={{ transform: "translateX(-10%)" }}
           >
-            <Link href="/">
-              <p className="block py-2 px-4 text-white hover:bg-gray-800">
-                Teste
-              </p>
-            </Link>
-            <Link href="/">
-              <p className="block py-2 px-4 text-white hover:bg-gray-800">
-                Teste
-              </p>
-            </Link>
-            <Link href="/">
-              <p className="block py-2 px-4 text-white hover:bg-gray-800">
-                Teste
-              </p>
-            </Link>
+            {routesList.map((route) => (
+              <Link key={route} href={`/${route === "Login" ? "/" : route.toLowerCase()}`}>
+                <p className="block py-2 px-4 text-white font-bold hover:bg-gray-800 transition-all ease-in-out duration-300">
+                  {route}
+                </p>
+              </Link>
+
+            ))}
           </div>
         )}
       </div>

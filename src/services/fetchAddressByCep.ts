@@ -29,6 +29,8 @@ const fetchAddressByCep = async (
           fontWeight: "bold",
         },
       });
+
+      return null
     }
     return response.data;
   } catch (error) {

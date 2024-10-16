@@ -15,7 +15,7 @@ const CepInput: React.FC<CepInputProps> = ({ placeholder = "", value, onChange }
   }
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 w-full">
       <input
         type="text"
         value={value}

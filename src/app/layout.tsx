@@ -1,3 +1,4 @@
+import { AuthContextProvider } from "@/contexts/AuthContext";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
@@ -19,8 +20,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-br">
-      <ToastContainer />
-      <body className={roboto.className}>{children}</body>
+      <AuthContextProvider>
+        <ToastContainer />
+        <body className={roboto.className}>{children}</body>
+      </AuthContextProvider>
     </html>
   );
 }

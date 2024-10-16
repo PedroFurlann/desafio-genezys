@@ -13,7 +13,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({ placeholder = "", value, 
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 w-full">
       <div className="relative">
 
         <input

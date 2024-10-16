@@ -7,6 +7,6 @@ export interface UserDTO {
   city: string;
   cep: string;
   state: string;
-  neighborHood: string;
+  neighborhood: string;
   password?: string;
 }

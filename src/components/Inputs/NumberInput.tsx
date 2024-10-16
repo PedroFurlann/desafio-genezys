@@ -10,7 +10,7 @@ type NumberInputProps = {
 
 const NumberInput: React.FC<NumberInputProps> = ({ placeholder = '', value, onChange, min, max }) => {
   return (
-    <div className="mb-4">
+    <div className="mb-4 w-full">
       <input
         type="number"
         value={value}
