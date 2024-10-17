@@ -178,9 +178,9 @@ export default function Home() {
   }
 
 
-  if (userStorage && typeof window !== "undefined") {
-    router.push("/users");
-  }
+    if (userStorage && typeof window !== undefined) {
+      router.push("/users");
+    }
 
   useEffect(() => {
     if (Object.keys(errors).length > 0) {

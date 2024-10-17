@@ -75,11 +75,9 @@ export default function Home() {
     }
   }
 
-  useEffect(() => {
     if (userStorage && typeof window !== undefined) {
       router.push("/users");
     }
-  }, [])
 
   return (
     <>

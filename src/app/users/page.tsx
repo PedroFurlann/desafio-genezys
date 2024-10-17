@@ -1,7 +1,7 @@
 "use client";
 
 import { Navbar } from "@/components/Navbar";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useLocalStorage from "@/hooks/useLocaStorage";
 import { UserDTO } from "@/DTOs/UserDTO";
 import { useRouter } from "next/navigation";
@@ -40,7 +40,7 @@ export default function Users() {
 
   const token = storageTokenGet()
 
-  // const tokenVerified = verifyJWT(token?.token ?? "")
+  const tokenVerified = verifyJWT(token?.token ?? "")
 
   const handleSignOut = () => {
     setLoading(true)
@@ -67,7 +67,7 @@ export default function Users() {
     }
   }
 
-  if ((!userStorage) && typeof window !== "undefined") {
+  if ((!userStorage || !tokenVerified) && typeof window !== "undefined") {
     signOut()
     router.push("/");
   }
