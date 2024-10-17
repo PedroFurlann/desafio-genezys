@@ -16,6 +16,8 @@ import fetchAddressByCep from "@/services/fetchAddressByCep";
 import CepInput from "@/components/Inputs/CepInput";
 import NumberInput from "@/components/Inputs/NumberInput";
 import { useEffect } from "react";
+import useLocalStorage from "@/hooks/useLocaStorage";
+import { UserDTO } from "@/DTOs/UserDTO";
 
 interface FormData {
   name: string;
@@ -34,13 +36,23 @@ export default function Home() {
 
   const { signIn, isLoadingUserStorageData, user } = useAuth();
 
+  const { getValue, removeValue } = useLocalStorage()
+
+  const setValueStorage = (key: string, value: string) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(key, value);
+    }
+  };
+
+  const usersList: UserDTO[] = getValue("users") ?? []
+
   const router = useRouter();
 
   const userStorage = storageUserGet();
 
-  // if (user2 && typeof window !== "undefined") {
-  //   router.push("/transactions");
-  // }
+  if (userStorage && typeof window !== "undefined") {
+    router.push("/users");
+  }
 
   const validationSchema = yup.object().shape({
     name: yup
@@ -89,10 +101,58 @@ export default function Home() {
     };
   }
 
-  async function handleRegister({ email, password }: FormData) {
+  async function handleRegister({ name, email, cep, city, neighborhood, number, password, state, street }: FormData) {
+    try {
+      const newUsersList = [...usersList]
 
+      const user = {
+        id: newUsersList[newUsersList.length - 1]?.id + 1 || 1,
+        addressNumber: number,
+        cep,
+        city,
+        email,
+        name,
+        neighborhood,
+        state,
+        street,
+        password,
+      }
 
-    console.log("aqui")
+      if(newUsersList.some((user) => user.email === email)) {
+        toast.error("Email já está em uso.", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "dark",
+          style: {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            fontWeight: "bold",
+          },
+        });
+
+        return 
+      }
+
+      newUsersList.push(user)
+
+      setValueStorage("users", JSON.stringify(newUsersList))
+
+      await signIn(email, password, true, user)
+    } catch (error) {
+      console.error(error)
+      toast.error("Os campos com * são obrigatórios! Obs: o endereço será preenchido automaticamente ao digitar um Cep válido", {
+        position: "bottom-center",
+        autoClose: 3000,
+        theme: "dark",
+        style: {
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          fontWeight: "bold",
+        },
+      });
+    }
   }
 
   // useEffect(() => {

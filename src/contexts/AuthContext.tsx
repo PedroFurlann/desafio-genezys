@@ -11,7 +11,7 @@ import { generateJWT } from "@/services/tokenService";
 
 export interface AuthContextDataProps {
   user: UserDTO | null;
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string, register: boolean, userFromRegister?: UserDTO | undefined) => Promise<void>;
   isLoadingUserStorageData: boolean;
   signOut: () => Promise<void>;
   token: string | null;
@@ -28,7 +28,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [token, setToken] = useState<string | null>(null)
   const [isLoadingUserStorageData, setIsLoadingUserStorageData] = useState(true);
 
-  const { getValue, setValue, removeValue } = useLocalStorage();
+  const { getValue } = useLocalStorage();
 
   const usersList: UserDTO[] | null = getValue("users")
 
@@ -37,50 +37,62 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     setUser(userData);
   }
 
-  async function signIn(email: string, password: string) {
+  async function signIn(email: string, password: string, register: boolean, userFromRegister?: UserDTO) {
     try {
-      if (!usersList) {
-        toast.error("Email ou senha inválidos!", {
-          position: "top-right",
-          autoClose: 3000,
-          theme: "dark",
-          style: {
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            fontWeight: "bold",
-          },
-        });
+      let user: UserDTO | undefined;
 
-        return;
+      if (register) {
+        user = userFromRegister
+        if (!user)
+          return;
+      } else {
+        console.log("aqui")
+        if (!usersList) {
+          toast.error("Email ou senha inválidos!", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "dark",
+            style: {
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              fontWeight: "bold",
+            },
+          });
+
+          return;
+        }
+
+        user = usersList.find((user) => user.email === email && user.password === password)
+
+        if (!user) {
+          toast.error("Email ou senha inválidos!", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "dark",
+            style: {
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              fontWeight: "bold",
+            },
+          });
+
+          return;
+        }
       }
 
-      const user = usersList.find((user) => user.email === email && user.password === password)
+      console.log(user)
 
-      if (!user) {
-        toast.error("Email ou senha inválidos!", {
-          position: "top-right",
-          autoClose: 3000,
-          theme: "dark",
-          style: {
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            fontWeight: "bold",
-          },
-        });
+      const userToken = generateJWT({ userId: user.id })
 
-        return;
-      }
+      setIsLoadingUserStorageData(true);
+      storageUserSave(user);
+      storageTokenSave({ token: userToken });
 
-        const userToken = generateJWT({ userId: user.id })
-
-        setIsLoadingUserStorageData(true);
-        storageUserSave(user);
-        storageTokenSave({ token: userToken });
-
-        await userAndTokenUpdate(user, userToken);
+      await userAndTokenUpdate(user, userToken);
     } catch (error) {
+      console.error(error)
       toast.error("Email ou senha inválidos!", {
         position: "top-right",
         autoClose: 3000,

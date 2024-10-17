@@ -12,6 +12,8 @@ import Image from "next/image";
 import TextInput from "@/components/Inputs/TextInput";
 import PasswordInput from "@/components/Inputs/PasswordInput";
 import Button from "@/components/Button";
+import { useEffect } from "react";
+import Link from "next/link";
 
 interface FormData {
   email: string;
@@ -24,10 +26,7 @@ export default function Home() {
   const router = useRouter();
 
   const userStorage = storageUserGet();
-
-  // if (user2 && typeof window !== "undefined") {
-  //   router.push("/transactions");
-  // }
+  
 
   const validationSchema = yup.object().shape({
     email: yup
@@ -50,8 +49,7 @@ export default function Home() {
 
   async function handleSignIn({ email, password }: FormData) {
     try {
-      await signIn(email, password);
-      // router.push("/transactions");
+      await signIn(email, password, false);
 
       toast.success("Login realizado com sucesso!", {
         position: "top-right",
@@ -81,11 +79,11 @@ export default function Home() {
     }
   }
 
-  // useEffect(() => {
-  //   if (user2 && typeof window !== undefined) {
-  //     router.push("transactions");
-  //   }
-  // }, [])
+  useEffect(() => {
+    if (userStorage && typeof window !== undefined) {
+      router.push("/users");
+    }
+  }, [])
 
   return (
     <>
@@ -135,24 +133,24 @@ export default function Home() {
                 onClick={() => { }}
                 size="medium"
               />
-              {/* <p className="font-bold text-lg text-gray-200">
+              <p className="font-bold text-sm text-gray-500">
                 Ainda não tem conta?{" "}
                 <Link
                   href="/register"
-                  className="text-amber-500 text-lg font-bold hover:opacity-70 transition-all ease-in-out duration-300"
+                  className="text-gray-300 text-sm font-bold hover:opacity-70 transition-all ease-in-out duration-300"
                 >
                   Cadastre-se aqui
                 </Link>
               </p>
-              <p className="font-bold text-lg text-gray-200">
+              <p className="font-bold text-sm text-gray-500">
                 Esqueceu sua senha?{" "}
                 <Link
                   href="/forgotPassword"
-                  className="text-amber-500 text-lg font-bold hover:opacity-70 transition-all ease-in-out duration-300"
+                  className="text-white text-sm font-bold hover:opacity-70 transition-all ease-in-out duration-300"
                 >
                   Clique aqui para recuperar.
                 </Link>
-              </p> */}
+              </p>
             </div>
           </div>
         </div>

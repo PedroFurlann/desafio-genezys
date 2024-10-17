@@ -1,5 +1,4 @@
 import { UserDTO } from "@/DTOs/UserDTO";
-import useLocalStorage from "@/hooks/useLocaStorage";
 
 export function storageUserSave(user: UserDTO) {
   if (typeof window !== "undefined") {
