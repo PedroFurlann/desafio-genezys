@@ -46,7 +46,6 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
         if (!user)
           return;
       } else {
-        console.log("aqui")
         if (!usersList) {
           toast.error("Email ou senha inválidos!", {
             position: "top-right",
@@ -63,7 +62,8 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
           return;
         }
 
-        user = usersList.find((user) => user.email === email && user.password === password)
+
+        user = usersList.find((user) => (user.email === email) && (user.password === password))
 
         if (!user) {
           toast.error("Email ou senha inválidos!", {
@@ -82,17 +82,30 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
         }
       }
 
-      console.log(user)
-
       const userToken = generateJWT({ userId: user.id })
 
       setIsLoadingUserStorageData(true);
       storageUserSave(user);
       storageTokenSave({ token: userToken });
 
+
       await userAndTokenUpdate(user, userToken);
+
+      if (!register) {
+        toast.success("Login realizado com sucesso!", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "dark",
+          style: {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            fontWeight: "bold",
+          },
+        });
+      }
     } catch (error) {
-      console.error(error)
+      console.log(error, "erro aqui")
       toast.error("Email ou senha inválidos!", {
         position: "top-right",
         autoClose: 3000,

@@ -10,10 +10,12 @@ import { toast } from "react-toastify";
 import { storageTokenGet } from "@/storage/storageToken";
 import { verifyJWT } from "@/services/tokenService";
 import { useAuth } from "@/hooks/useAuth";
+import Loader from "@/components/Loader";
 
 
 export default function Users() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false)
 
   const { getValue } = useLocalStorage()
 
@@ -38,9 +40,34 @@ export default function Users() {
 
   const token = storageTokenGet()
 
-  const tokenVerified = verifyJWT(token?.token ?? "")
+  // const tokenVerified = verifyJWT(token?.token ?? "")
 
-  if ((!userStorage || !tokenVerified) && typeof window !== "undefined") {
+  const handleSignOut = () => {
+    setLoading(true)
+    try {
+      signOut()
+    } catch (error) {
+      console.error(error)
+
+      const title = "Não foi possível realizar o login. Tente novamente mais tarde.";
+
+      toast.error(title, {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "dark",
+        style: {
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          fontWeight: "bold",
+        },
+      });
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if ((!userStorage) && typeof window !== "undefined") {
     signOut()
     router.push("/");
   }
@@ -57,68 +84,72 @@ export default function Users() {
             </p>
             <button
               className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-              onClick={signOut}
+              onClick={handleSignOut}
             >
               Sair
             </button>
           </div>
 
           <div className="flex rounded-md flex-col items-center justify-center flex-grow md:flex-row">
-            
+
 
             {!users ? (
               <p className="text-white font-bold text-3xl">Não existe nenhum usuário cadastrado!</p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full border-collapse border border-black bg-transparent">
-                  <thead>
-                    <tr className="text-white">
-                      <th className="border border-black p-2">Nome</th>
-                      <th className="border border-black p-2">Email</th>
-                      <th className="border border-black p-2">Endereço</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentUsers && currentUsers.length > 0 && currentUsers.map((user, index) => (
-                      <tr key={index} className="text-white">
-                        <td className="border border-black p-2">{user.name}</td>
-                        <td className="border border-black p-2">{user.email}</td>
-                        <td className="border border-black p-2">
-                          {user.city}, {user.neighborhood}, {user.street}, {user.addressNumber}, {user.state}
-                        </td>
+              loading ? (
+                <Loader />
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full border-collapse border border-black bg-transparent">
+                    <thead>
+                      <tr className="text-white">
+                        <th className="border border-black p-2">Nome</th>
+                        <th className="border border-black p-2">Email</th>
+                        <th className="border border-black p-2">Endereço (Rua, Bairro, Número, Cidade, Estado, CEP)</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {currentUsers && currentUsers.length > 0 && currentUsers.map((user, index) => (
+                        <tr key={index} className="text-white">
+                          <td className="border border-black p-2">{user.name}</td>
+                          <td className="border border-black p-2">{user.email}</td>
+                          <td className="border border-black p-2">
+                            {user.street}, {user.neighborhood}, {user.addressNumber}, {user.city}, {user.state}, {user.cep}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
 
-                <div className="flex justify-center items-center mt-4 space-x-2">
-                  <button
-                    className={`p-2 border border-black text-white ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    onClick={() => goToPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    Anterior
-                  </button>
-
-                  {Array.from({ length: totalPages }, (_, index) => (
+                  <div className="flex justify-center items-center mt-4 space-x-2">
                     <button
-                      key={index}
-                      className={`p-2 border border-black text-white ${currentPage === index + 1 ? 'bg-black' : ''}`}
-                      onClick={() => goToPage(index + 1)}
+                      className={`p-2 border border-black text-white ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      onClick={() => goToPage(currentPage - 1)}
+                      disabled={currentPage === 1}
                     >
-                      {index + 1}
+                      Anterior
                     </button>
-                  ))}
 
-                  <button
-                    className={`p-2 border border-black text-white ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    onClick={() => goToPage(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    Próxima
-                  </button>
+                    {Array.from({ length: totalPages }, (_, index) => (
+                      <button
+                        key={index}
+                        className={`p-2 border border-black text-white ${currentPage === index + 1 ? 'bg-black' : ''}`}
+                        onClick={() => goToPage(index + 1)}
+                      >
+                        {index + 1}
+                      </button>
+                    ))}
+
+                    <button
+                      className={`p-2 border border-black text-white ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      onClick={() => goToPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      Próxima
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )
             )}
           </div>
         </div>

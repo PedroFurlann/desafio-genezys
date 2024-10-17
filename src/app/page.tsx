@@ -12,8 +12,9 @@ import Image from "next/image";
 import TextInput from "@/components/Inputs/TextInput";
 import PasswordInput from "@/components/Inputs/PasswordInput";
 import Button from "@/components/Button";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import Loader from "@/components/Loader";
 
 interface FormData {
   email: string;
@@ -21,12 +22,14 @@ interface FormData {
 }
 
 export default function Home() {
-  const { signIn, isLoadingUserStorageData, user } = useAuth();
+  const [loading, setLoading] = useState(false)
+
+  const { signIn } = useAuth();
 
   const router = useRouter();
 
   const userStorage = storageUserGet();
-  
+
 
   const validationSchema = yup.object().shape({
     email: yup
@@ -47,22 +50,13 @@ export default function Home() {
     resolver: yupResolver(validationSchema),
   });
 
-  async function handleSignIn({ email, password }: FormData) {
+  const handleSignIn = async ({ email, password }: FormData) => {
+    setLoading(true)
     try {
       await signIn(email, password, false);
-
-      toast.success("Login realizado com sucesso!", {
-        position: "top-right",
-        autoClose: 3000,
-        theme: "dark",
-        style: {
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          fontWeight: "bold",
-        },
-      });
+      router.push("/users")
     } catch (error) {
+      console.error(error)
       const title = "Não foi possível realizar o login. Tente novamente mais tarde.";
 
       toast.error(title, {
@@ -76,6 +70,8 @@ export default function Home() {
           fontWeight: "bold",
         },
       });
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -89,69 +85,73 @@ export default function Home() {
     <>
       <>
         <div className="min-h-screen flex flex-col bg-gray-900 overflow-y-auto">
-          <Navbar routesList={['Login', 'Register']} />
+          <Navbar routesList={['Login', 'Register', 'Recover Password']} />
           <div className="flex rounded-md flex-col items-center justify-center flex-grow md:flex-row">
-            <div className="flex flex-col gap-2 items-center justify-center p-8 md:w-96 md:h-96 bg-black rounded-md border-gray-800">
-              <Image alt="Genezys logo" src={Logo} className="w-12 h-12 bg-transparent" />
-              <p className="text-xl text-gray-200 font-bold">Realizar Login</p>
-              <Controller
-                control={control}
-                name="email"
-                render={({ field }) => (
-                  <TextInput
-                    type="email"
-                    placeholder="Email"
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
+            {loading ? (
+              <Loader />
+            ) : (
+              <div className="flex flex-col gap-2 items-center justify-center p-8 md:w-96 md:h-96 bg-black rounded-md border-gray-800">
+                <Image alt="Genezys logo" src={Logo} className="w-12 h-12 bg-transparent" />
+                <p className="text-xl text-gray-200 font-bold">Realizar Login</p>
+                <Controller
+                  control={control}
+                  name="email"
+                  render={({ field }) => (
+                    <TextInput
+                      type="email"
+                      placeholder="Email"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-sm font-bold self-start mt-[-12px]">
+                    {errors.email.message}
+                  </p>
                 )}
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm font-bold self-start mt-[-12px] mb-[-12px]">
-                  {errors.email.message}
-                </p>
-              )}
-              <Controller
-                control={control}
-                name="password"
-                render={({ field }) => (
-                  <PasswordInput
-                    placeholder="Senha"
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
+                <Controller
+                  control={control}
+                  name="password"
+                  render={({ field }) => (
+                    <PasswordInput
+                      placeholder="Senha"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-sm font-bold self-start mt-[-12px]">
+                    {errors.password.message}
+                  </p>
                 )}
-              />
-              {errors.password && (
-                <p className="text-red-500 text-sm font-bold self-start mt-[-12px] mb-[-12px]">
-                  {errors.password.message}
-                </p>
-              )}
 
-              <Button
-                label="Login"
-                onClick={() => { }}
-                size="medium"
-              />
-              <p className="font-bold text-sm text-gray-500">
-                Ainda não tem conta?{" "}
-                <Link
-                  href="/register"
-                  className="text-gray-300 text-sm font-bold hover:opacity-70 transition-all ease-in-out duration-300"
-                >
-                  Cadastre-se aqui
-                </Link>
-              </p>
-              <p className="font-bold text-sm text-gray-500">
-                Esqueceu sua senha?{" "}
-                <Link
-                  href="/forgotPassword"
-                  className="text-white text-sm font-bold hover:opacity-70 transition-all ease-in-out duration-300"
-                >
-                  Clique aqui para recuperar.
-                </Link>
-              </p>
-            </div>
+                <Button
+                  label="Login"
+                  onClick={handleSubmit(handleSignIn)}
+                  size="medium"
+                />
+                <p className="font-bold text-sm text-gray-500">
+                  Ainda não tem conta?{" "}
+                  <Link
+                    href="/register"
+                    className="text-gray-300 text-sm font-bold hover:opacity-70 transition-all ease-in-out duration-300"
+                  >
+                    Cadastre-se aqui
+                  </Link>
+                </p>
+                <p className="font-bold text-sm text-gray-500">
+                  Esqueceu sua senha?{" "}
+                  <Link
+                    href="/recover-password"
+                    className="text-white text-sm font-bold hover:opacity-70 transition-all ease-in-out duration-300"
+                  >
+                    Clique aqui para recuperar.
+                  </Link>
+                </p>
+              </div>
+            )}
           </div>
         </div>
 

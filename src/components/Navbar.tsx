@@ -61,7 +61,7 @@ export const Navbar = ({ routesList }: Props) => {
             style={{ transform: "translateX(-10%)" }}
           >
             {routesList.map((route) => (
-              <Link key={route} href={`/${route === "Login" ? "/" : route.toLowerCase()}`}>
+              <Link key={route} href={`/${route === "Login" ? "" : route === "Recover Password" ? "recover-password" : route.toLowerCase()}`}>
                 <p className="block py-2 px-4 text-white font-bold hover:bg-gray-800 transition-all ease-in-out duration-300">
                   {route}
                 </p>
