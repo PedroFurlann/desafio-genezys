@@ -2,7 +2,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-## !!!Lembre de usar o arquivo .env.example para popular o seu .env
+## !!! Lembre-se de usar o arquivo .env.example para popular o seu .env
 
 First, run the development server:
 
